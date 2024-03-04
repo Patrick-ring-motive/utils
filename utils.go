@@ -3,8 +3,12 @@ import(
   "unsafe"
 )
 
-func ForceType[T any](obj any,t func(T)) T {
-  return *(*T)(unsafe.Pointer(&obj))
+func ForceType[F any,T any](f F,t func(T)) T {
+  return *(*T)(unsafe.Pointer(&f))
+}
+
+func ForceRawType[T any](f any,t func(T)) T {
+  return *(*T)(unsafe.Pointer(&f))
 }
 
 func NilOfType[T any](t func(T)) T {
@@ -12,7 +16,7 @@ func NilOfType[T any](t func(T)) T {
   return *(*T)(unsafe.Pointer(&n))
 }
 
-func Pass(a any) {}
+func AllowUnused(a any) {}
 
 func Ptr[T any](value T) *T {
   return &value
