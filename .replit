@@ -9,7 +9,7 @@ channel = "stable-23_05"
 requiredFiles = [".replit"]
 
 [deployment]
-build = ["sh", "-c", "go build utils.go"]
+build = ["sh", "-c", "go build -o utils utils.go"]
 run = ["sh", "-c", "./utils"]
 ignorePorts = false
 deploymentTarget = "gce"
