@@ -6,7 +6,7 @@ modules = ["go-1.21:v2-20231201-3b22c78"]
 channel = "stable-23_05"
 
 [gitHubImport]
-requiredFiles = [".replit"]
+requiredFiles = [".replit"
 
 [deployment]
 build = ["sh", "-c", "go build main.go"]
