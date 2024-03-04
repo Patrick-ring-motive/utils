@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-  "github.com/Patrick-ring-motive/utils/blob/main/utils"
+  "utils"
 )
 
 func main() {
