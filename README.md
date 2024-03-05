@@ -47,3 +47,22 @@ var pointerToValue = utils.Ptr(value)
 fmt.Println(*pointerToValue) // Outputs: example
 ```
 
+### `AsInterface`
+
+- **Purpose**: Returns the input value as an `interface{}` type, effectively serving as a no-operation for interface conversion.
+- **Signature**: `func AsInterface(i interface{}) interface{}`
+
+### `AssertType`
+
+- **Purpose**: Performs a type assertion on an interface value to convert it to a specific type `T`, panicking if the assertion fails.
+- **Signature**: `func AssertType[T any](i interface{}, t func(T)) T`
+
+### `AssertTypeUnsafe`
+
+- **Purpose**: Similar to `AssertType`, but it ignores the success of the type assertion, primarily used when the developer is certain of the underlying type and wishes to avoid checking the assertion result.
+- **Signature**: `func AssertTypeUnsafe[T any](i interface{}, t func(T)) T`
+
+### `SwitchType`
+
+- **Purpose**: Uses a type switch to attempt conversion of an interface value to type `T`, falling back to an unsafe conversion if the direct type assertion fails.
+- **Signature**: `func SwitchType[T any](i interface{}, t func(T)) T`
