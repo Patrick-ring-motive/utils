@@ -36,7 +36,7 @@ func AssertTypeUnsafe[T any](i interface{},t func(T))T{
   return r
 }
 
-func SwitchType[T any](i interface{})T {
+func SwitchType[T any](i interface{},t func(T))T {
   switch v := i.(type) {
   case T:
     return v
