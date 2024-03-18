@@ -16,7 +16,7 @@ func NilOfType[T any](t func(T)) T {
   return *(*T)(unsafe.Pointer(&n))
 }
 
-func AllowUnused(a any) {}
+func AllowUnused(a ...any) {}
 
 func Ptr[T any](value T) *T {
   return &value
@@ -26,7 +26,7 @@ func AsInterface(i interface{})interface{}{
   return i
 }
 
-func AssertType[T any](i interface{},t func(T))T{
+func AssertType[T any](i any,t func(T))T{
   return i.(T)
 }
 
@@ -36,7 +36,8 @@ func AssertTypeUnsafe[T any](i interface{},t func(T))T{
   return r
 }
 
-func SwitchType[T any](i interface{},t func(T))T {
+func SwitchType[S any,T any](s S,t func(T))T {
+  i := AsInterface(s)
   switch v := i.(type) {
   case T:
     return v
@@ -44,3 +45,4 @@ func SwitchType[T any](i interface{},t func(T))T {
     return ForceType(i,func(t T){})
   }
 }
+
