@@ -17,6 +17,11 @@ func NilOfType[T any](t func(T)) T {
   return *(*T)(unsafe.Pointer(&n))
 }
 
+func ZeroOfType[T any](t func(T)) T{
+  var x T
+  return x
+}
+
 func AllowUnused(a ...any) {}
 
 func Ptr[T any](value T) *T {
