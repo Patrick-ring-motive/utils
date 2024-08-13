@@ -36,10 +36,10 @@ func AsInterface(i interface{})interface{}{
   return i
 }
 
-/*func AssertType[I any,T any](i I,t ...func(T))T{
+func AssertType[T any](i any,t ...func(T))T{
   return i.(T)
 }
-
+/*
 func ConvertType[I any,T any](i I,t ...func(T))T{
   switch v := i.(type) {
   case T:
