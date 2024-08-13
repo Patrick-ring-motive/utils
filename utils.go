@@ -4,6 +4,10 @@ import(
   "reflect"
 )
 
+func TypeOf[T any](t ...T)func(T){
+  return func(T){}
+}
+
 func ForceType[F any,T any](f F,t ...func(T)) T {
   return *(*T)(unsafe.Pointer(&f))
 }
@@ -32,13 +36,18 @@ func AsInterface(i interface{})interface{}{
   return i
 }
 
-func AssertType[T any](i any,t ...func(T))T{
+/*func AssertType[I any,T any](i I,t ...func(T))T{
   return i.(T)
 }
 
-func ConvertType[T any](i interface{},t ...func(T))T{
-  return T(i)
-}
+func ConvertType[I any,T any](i I,t ...func(T))T{
+  switch v := i.(type) {
+  case T:
+    return T(i)
+  default:
+    return T(i)
+  }
+}*/
 
 func AssertTypeUnsafe[T any](i interface{},t ...func(T))T{
   r, ok := i.(T)
