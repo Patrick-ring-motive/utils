@@ -36,6 +36,10 @@ func AssertType[T any](i any,t ...func(T))T{
   return i.(T)
 }
 
+func ConvertType[T any](i interface{},t ...func(T))T{
+  return T(i)
+}
+
 func AssertTypeUnsafe[T any](i interface{},t ...func(T))T{
   r, ok := i.(T)
   AllowUnused(ok)
