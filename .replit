@@ -1,4 +1,4 @@
-entrypoint = "main/main.go"
+entrypoint = "utils/utils.go"
 
 modules = ["go-1.21:v2-20231201-3b22c78"]
 
@@ -10,6 +10,6 @@ requiredFiles = [".replit"]
 
 [deployment]
 build = ["sh", "-c", "./build.sh"]
-run = ["sh", "-c", "./main/main"]
+run = ["sh", "-c", "./utils/utils"]
 ignorePorts = false
 deploymentTarget = "gce"
