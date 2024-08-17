@@ -205,6 +205,8 @@ func NilOf[T any]() T {
 }
 
 /*
+This does not work yet. Don't use it.
+
 InitOfType uses reflection to detect if the target type is one that has a nil zero value.
 If it does then an empty shell ov the target type is returned.
 Otherwise the zero value is returned.
