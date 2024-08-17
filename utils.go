@@ -53,7 +53,7 @@ This is a pattern than handles errors by "returning" a fallback value
 on panic or nil. This pattern is difficult to abstract out because go generics dont handle various function types well and the defer needs to happen one function call deeper than where we intend to recover a panic.
 */
 
-/*Aformentioned type reference via `func(T)`*/
+/*Type reference via `func(T)`*/
 func TypeRef[T any](t ...T) func(T) {
 	return func(T) {}
 }
@@ -63,6 +63,16 @@ ConvertType is the start of a chain of type conversion methods that get increasi
 This attenpts basic type conversion `type(i)` and falls back to AsserType on failure.
 */
 func ConvertType[I any, T any](i I, t ...func(T)) T {
+	switch v := any(i).(type) {
+	case T:
+		return T(v)
+	default:
+		return T(AssertType[I, T](i))
+	}
+}
+
+/*Shorthand for ConvertType but takes only one parameter*/
+func Convert[I any, T any](i I) T {
 	switch v := any(i).(type) {
 	case T:
 		return T(v)
@@ -83,11 +93,21 @@ func AssertType[I any, T any](i I, t ...func(T)) T {
 	return r
 }
 
+/*Shorthand for AssertType but takes only one parameter*/
+func Assert[F any, T any](f F) T {
+	return AssertType[F, T](f)
+}
+
 /*AssertTypeUnsafe attempts type assertion and returns whatever the result even if it fails*/
 func AssertTypeUnsafe[T any](i interface{}, t ...func(T)) T {
 	r, ok := i.(T)
 	AllowUnused(ok)
 	return r
+}
+
+/*Shorthand for AssertTypeUnsafe but takes only one parameter*/
+func AssertUnsafe[T any](f any) T {
+	return AssertTypeUnsafe[T](f)
 }
 
 /*SwitchType uses a type switch to try and convert types. It falls back to ForceType on failure to match type.*/
@@ -99,6 +119,11 @@ func SwitchType[S any, T any](s S, t ...func(T)) T {
 	default:
 		return ForceType[S, T](s)
 	}
+}
+
+/*Shorthand for SwitchType but takes only one parameter*/
+func Switch[F any, T any](f F) T {
+	return SwitchType[F, T](f)
 }
 
 /*
@@ -120,6 +145,11 @@ func forceType[F any, T any](a *[1]T, f F) {
 	a[0] = *(*T)(unsafe.Pointer(&f))
 }
 
+/*Shorthand for ForceType but takes only one parameter*/
+func Force[F any, T any](f F) T {
+	return ForceType[F, T](f)
+}
+
 /*
 ForceRawType uses unsafe.Pointer and the `any` type to forcibly convert types.
 On panic it falls back to the zero value of the target type which ends the chain
@@ -139,6 +169,11 @@ func forceRawType[T any](a *[1]T, f any) {
 	a[0] = *(*T)(unsafe.Pointer(&f))
 }
 
+/*Alias for ForceRawType but only 1 parameter*/
+func Coerce[T any](f any) T {
+	return ForceRawType[T](f)
+}
+
 /*
 ZeroOfType returns the zero value of the target type.
 You can do `ZeroOfType(func(T){})` or `ZeroOfType[T]()` if your type is inferable
@@ -148,11 +183,23 @@ func ZeroOfType[T any](t ...func(T)) T {
 	return x
 }
 
+/*Shorthand version for ZeroOfType but accepts no parameters*/
+func ZeroOf[T any]() T {
+	var x T
+	return x
+}
+
 /*
 NilOfType takes an any interface of nil and coerces it into the target type
 You can do `NilOfType(func(T){})` or `NilOfType[T]()` if your type is inferable
 */
 func NilOfType[T any](t ...func(T)) T {
+	n := any(nil)
+	return *(*T)(unsafe.Pointer(&n))
+}
+
+/*Shorthand version for NilOfType but accepts no parameters*/
+func NilOf[T any]() T {
 	n := any(nil)
 	return *(*T)(unsafe.Pointer(&n))
 }
@@ -199,6 +246,11 @@ func InitOfType[T any](t ...func(T)) T {
 	return instance
 }
 
+/*Shorthand version for InitOfType but accepts no parameters*/
+func InitOf[T any]() T {
+	return InitOfType[T]()
+}
+
 /*
 AllowUnused is a function that allows you to ignore variables.
 No action is performed on the values passed in.
@@ -240,11 +292,11 @@ func AsGeneric[generic any](g generic) generic {
 }
 
 /*
-InvokeAnyFunc takes an interface of a function and an interface of a list of input parapeters and attempts to execute the function using those parameters.
+Invoke takes an interface of a function and an interface of a list of input parapeters and attempts to execute the function using those parameters.
 This is enabled using reflection.
 This function is highly unstable and allows for all kinds of strange possibilities.
 */
-func InvokeAnyFunc(fn interface{}, args interface{}) any {
+func Invoke(fn interface{}, args interface{}) any {
 	fnVal := reflect.ValueOf(fn)
 	fnType := fnVal.Type()
 	numIn := fnType.NumIn()
