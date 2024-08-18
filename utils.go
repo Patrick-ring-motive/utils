@@ -72,7 +72,7 @@ func ConvertType[I any, T any](i I, t ...func(T)) T {
 }
 
 /*Shorthand for ConvertType but takes only one parameter*/
-func Convert[I any, T any](i I) T {
+func Convert[T any, I any](i I) T {
 	switch v := any(i).(type) {
 	case T:
 		return T(v)
@@ -94,7 +94,7 @@ func AssertType[I any, T any](i I, t ...func(T)) T {
 }
 
 /*Shorthand for AssertType but takes only one parameter*/
-func Assert[F any, T any](f F) T {
+func Assert[T any, F any](f F) T {
 	return AssertType[F, T](f)
 }
 
@@ -122,7 +122,7 @@ func SwitchType[S any, T any](s S, t ...func(T)) T {
 }
 
 /*Shorthand for SwitchType but takes only one parameter*/
-func Switch[F any, T any](f F) T {
+func Switch[T any,F any](f F) T {
 	return SwitchType[F, T](f)
 }
 
@@ -146,7 +146,7 @@ func forceType[F any, T any](a *[1]T, f F) {
 }
 
 /*Shorthand for ForceType but takes only one parameter*/
-func Force[F any, T any](f F) T {
+func Force[T any,F any](f F) T {
 	return ForceType[F, T](f)
 }
 
