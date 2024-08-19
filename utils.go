@@ -214,9 +214,9 @@ For example if the target type is a slice, then an empty slice is returned
 */
 func InitOfType[T any](t ...func(T)) T {
 	var instance T
-	typ := reflect.TypeOf(instance)
-
-	switch typ.Kind() {
+	v := reflect.ValueOf(instance)
+	typ := v.Type()
+	switch v.Kind() {
 	case reflect.Slice:
 		val := reflect.MakeSlice(typ, 0, 0)
 		return val.Interface().(T)
