@@ -25,7 +25,7 @@ Utils has a convenient function to do this called TypeRef which you can use to g
 You can generate them from an abstract type like so: `TypeRef[int]()` or from a concrete type like so: `TypeRef(0)`.
 
 `*[1]T` is a pointer to an array of length 1 of type T. This ensures that values are passed by reference and not
-copied and facilitates passing values back from a defer/recover block.
+copied and facilitates passing values back from a defer/recover block. This setup requires the values be allocated to heap memory. In a panic/defer/recover situation, the stack is unwound and stack allocated values can be lost.
 
 That brings me to the unconventional error handling pattern.
 
@@ -62,23 +62,34 @@ func TypeRef[T any](t ...T) func(T) {
 ConvertType is the start of a chain of type conversion methods that get increasingly more aggressive in their attempts to convert the type.
 This attenpts basic type conversion `type(i)` and falls back to AsserType on failure.
 */
-func ConvertType[I any, T any](i I, t ...func(T)) T {
-	switch v := any(i).(type) {
-	case T:
-		return T(v)
-	default:
-		return T(AssertType[I, T](i))
+func ConvertType[From any, To any](from From, t ...func(To)) To {
+	switch v := any(from).(type) {
+	case To:
+		return To(v)
 	}
+	var to To
+	v := reflect.ValueOf(to)
+	typ := v.Type()
+	val := reflect.ValueOf(from)
+	if(val.CanConvert(typ)){
+		cv := val.Convert(typ)
+		cval,ok := any(cv).(To)
+		if(ok){
+			return cval
+		}
+		if(cv.CanInterface()){
+		cval,ok = val.Convert(typ).Interface().(To)
+			if(ok){
+				return cval
+			}
+		}
+	}
+	return To(AssertType[From, To](from))
 }
 
 /*Shorthand for ConvertType but takes only one parameter*/
 func Convert[T any, I any](i I) T {
-	switch v := any(i).(type) {
-	case T:
-		return T(v)
-	default:
-		return T(AssertType[I, T](i))
-	}
+	return ConvertType[I, T](i)
 }
 
 /*
@@ -313,4 +324,28 @@ func Invoke(fn interface{}, args interface{}) any {
 		result[i] = o.Interface()
 	}
 	return result[0]
+}
+
+
+
+func Conflect[To any, From any](from From) (To,bool) {
+	var z To
+	a := &[1]To{z}
+	b := &[1]bool{false}
+	conflect(a,b, from)
+	return a[0],b[0]
+}
+func conflect[To any, From any](a *[1]To,b *[1]bool,from From) {
+	defer func() {
+		if r := recover(); r != nil {
+			b[0] = false
+		}
+	}()
+	var to To
+	v := reflect.ValueOf(to)
+	typ := v.Type()
+	val := reflect.ValueOf(from)
+	val = val.Convert(typ)
+	a[0] = val.Interface().(To)
+	b[0] = true
 }
